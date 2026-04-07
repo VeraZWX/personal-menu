@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good morning, 呼呼</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --warm-cream: #FDF6E3;
+            --warm-orange: #E8A87C;
+            --warm-brown: #8B5A2B;
+            --warm-yellow: #F5D76E;
+            --warm-red: #C96B4A;
+            --text-dark: #4A3728;
+            --text-light: #7A6656;
+            --card-bg: #FFFBF5;
+            --shadow-soft: rgba(139, 90, 43, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-cream) 0%, #FAE8D4 50%, var(--warm-cream) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(232, 168, 124, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(245, 215, 110, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: linear-gradient(180deg, rgba(253, 246, 227, 0.98) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px var(--shadow-soft);
+            z-index: 1000;
+            border-bottom: 2px solid var(--warm-orange);
+        }
+        .logo {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 1.6rem;
+            color: var(--warm-red);
+            text-shadow: 2px 2px 4px rgba(201, 107, 74, 0.2);
+            letter-spacing: 2px;
+            flex-shrink: 0;
+        }
+        .nav-center {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: var(--warm-red);
+            background: rgba(232, 168, 124, 0.15);
+        }
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--warm-orange), var(--warm-red));
+            color: white;
+            box-shadow: 0 4px 15px rgba(232, 168, 124, 0.4);
+        }
+        .nav-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-shrink: 0;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .btn-add-dish {
+            background: linear-gradient(135deg, var(--warm-orange), var(--warm-red));
+            color: white;
+            box-shadow: 0 4px 15px rgba(232, 168, 124, 0.3);
+        }
+        .btn-add-dish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 168, 124, 0.4);
+        }
+        .btn-add-category {
+            background: white;
+            color: var(--warm-brown);
+            border: 2px solid var(--warm-orange);
+        }
+        .btn-add-category:hover {
+            background: rgba(232, 168, 124, 0.1);
+            transform: translateY(-2px);
+        }
+        .main-content {
+            padding: 8rem 2rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            color: var(--warm-brown);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--warm-orange), var(--warm-red));
+            margin: 1rem auto 0;
+            border-radius: 2px;
+        }
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .dish-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px var(--shadow-soft);
+            transition: all 0.4s ease;
+            position: relative;
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+        .dish-card:nth-child(1) { animation-delay: 0.1s; }
+        .dish-card:nth-child(2) { animation-delay: 0.2s; }
+        .dish-card:nth-child(3) { animation-delay: 0.3s; }
+        .dish-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dish-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 50px rgba(139, 90, 43, 0.25);
+        }
+        .dish-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--warm-orange), var(--warm-red));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            z-index: 2;
+        }
+        .dish-card:hover::before { transform: scaleX(1); }
+        .dish-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .dish-card:hover .dish-image { transform: scale(1.05); }
+        .dish-image-container {
+            overflow: hidden;
+            position: relative;
+        }
+        .dish-tag {
+            position: absolute;
+            top: 12px; right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--warm-red);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+        .card-actions {
+            position: absolute;
+            top: 12px; left: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .dish-card:hover .card-actions { opacity: 1; }
+        .edit-btn, .delete-btn {
+            width: 36px; height: 36px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .edit-btn:hover {
+            background: var(--warm-orange);
+            color: white;
+            transform: scale(1.1);
+        }
+        .delete-btn:hover {
+            background: #e74c3c;
+            color: white;
+            transform: scale(1.1);
+        }
+        .dish-content {
+            padding: 1.2rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .dish-name {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0;
+            font-family: 'ZCOOL XiaoWei', serif;
+            text-align: center;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        .click-hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.8rem;
+            opacity: 0.7;
+        }
+        .dish-card:hover .click-hint { opacity: 1; }
+        .dish-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: linear-gradient(180deg, rgba(232, 168, 124, 0.05) 0%, rgba(245, 215, 110, 0.08) 100%);
+        }
+        .dish-details.show { max-height: 600px; }
+        .details-inner {
+            padding: 1.5rem;
+            border-top: 1px dashed rgba(232, 168, 124, 0.3);
+        }
+        .detail-section { margin-bottom: 1rem; }
+        .detail-section:last-child { margin-bottom: 0; }
+        .detail-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--warm-brown);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .detail-title::before {
+            content: '◆';
+            color: var(--warm-orange);
+            font-size: 0.7rem;
+        }
+        .dish-ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .ingredient {
+            background: linear-gradient(135deg, rgba(232, 168, 124, 0.2), rgba(245, 215, 110, 0.2));
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            border: 1px solid rgba(232, 168, 124, 0.3);
+            transition: all 0.2s ease;
+        }
+        .ingredient:hover {
+            background: linear-gradient(135deg, var(--warm-orange), var(--warm-red));
+            color: white;
+            transform: translateY(-2px);
+        }
+        .dish-method {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.8;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 3px solid var(--warm-orange);
+        }
+        .category-section { margin-bottom: 5rem; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--warm-orange);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: 'ZCOOL XiaoWei', serif;
+        }
+        .modal-close {
+            width: 36px; height: 36px;
+            border: none;
+            background: rgba(232, 168, 124, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            background: var(--warm-red);
+            color: white;
+        }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid rgba(232, 168, 124, 0.3);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Noto Serif SC', serif;
+            background: white;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--warm-orange);
+            box-shadow: 0 0 0 3px rgba(232, 168, 124, 0.2);
+        }
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.3rem;
+        }
+        .image-upload-area {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .upload-btn {
+            padding: 0.6rem 1rem;
+            background: linear-gradient(135deg, var(--warm-orange), var(--warm-red));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: 'Noto Serif SC', serif;
+            transition: all 0.3s ease;
+        }
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(232, 168, 124, 0.4);
+        }
+        .image-url-input {
+            flex: 1;
+            min-width: 200px;
+        }
+        .image-preview {
+            margin-top: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        .image-preview img {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 10px;
+            border: 2px solid var(--warm-orange);
+        }
+        .remove-preview {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .btn-cancel, .btn-save {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .btn-cancel {
+            border: 2px solid var(--warm-orange);
+            background: white;
+            color: var(--warm-brown);
+        }
+        .btn-cancel:hover { background: rgba(232, 168, 124, 0.1); }
+        .btn-save {
+            border: none;
+            background: linear-gradient(135deg, var(--warm-orange), var(--warm-red));
+            color: white;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 168, 124, 0.4);
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .nav-actions, .nav-center { width: 100%; justify-content: center; }
+            .main-content { padding: 14rem 1rem 3rem; }
+            .section-title { font-size: 2rem; }
+            .dishes-grid { gap: 1.5rem; }
+            .modal { padding: 1.5rem; margin: 1rem; }
+        }
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(232, 168, 124, 0.3);
+            margin-top: 4rem;
+        }
+        .footer-heart {
+            color: var(--warm-red);
+            animation: pulse 1.5s ease infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .click-indicator {
+            position: absolute;
+            bottom: 15px; right: 15px;
+            width: 30px; height: 30px;
+            background: var(--warm-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+            z-index: 2;
+        }
+        .dish-card.expanded .click-indicator { transform: rotate(180deg); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Good morning, 呼呼</div>
+        <div class="nav-center" id="navLinks"></div>
+        <div class="nav-actions">
+            <button class="action-btn btn-add-dish" onclick="openAddDishModal()">
+                <span>➕</span><span>新增菜单</span>
+            </button>
+            <button class="action-btn btn-add-category" onclick="openAddCategoryModal()">
+                <span>📁</span><span>新增系列</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent"></main>
+
+    <footer class="footer">
+        用心烹饪，温暖每一餐 <span class="footer-heart">❤</span>
+    </footer>
+
+    <div class="modal-overlay" id="dishModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="dishModalTitle">新增菜品</h3>
+                <button class="modal-close" onclick="closeDishModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">菜品名称</label>
+                    <input type="text" class="form-input" id="dishName" placeholder="例如：赤山 · 红烧肉">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">所属系列</label>
+                    <select class="form-select" id="dishCategory"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">菜品图片</label>
+                    <div class="image-upload-area">
+                        <input type="file" id="dishImageFile" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
+                        <button type="button" class="upload-btn" onclick="document.getElementById('dishImageFile').click()">
+                            📷 选择图片文件
+                        </button>
+                        <input type="text" class="form-input image-url-input" id="dishImage" placeholder="或输入图片链接">
+                    </div>
+                    <div id="imagePreview" class="image-preview" style="display:none">
+                        <img id="previewImg" src="" alt="预览">
+                        <button type="button" class="remove-preview" onclick="removeImage()">×</button>
+                    </div>
+                    <p class="form-hint">支持本地图片或网络链接（推荐尺寸：600×400）</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">标签</label>
+                    <input type="text" class="form-input" id="dishTag" placeholder="例如：招牌推荐">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">配料（用逗号分隔）</label>
+                    <input type="text" class="form-input" id="dishIngredients" placeholder="例如：五花肉, 冰糖, 老抽">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">烹饪步骤</label>
+                    <textarea class="form-textarea" id="dishMethod" placeholder="每步用换行分隔"></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeDishModal()">取消</button>
+                <button class="btn-save" id="saveDishBtn" onclick="saveDish()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">新增系列</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">系列名称</label>
+                    <input type="text" class="form-input" id="categoryName" placeholder="例如：海鲜系列">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeCategoryModal()">取消</button>
+                <button class="btn-save" onclick="saveCategory()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 默认数据
+        const defaultData = {
+            categories: [
+                { id: 'meat', name: '荤菜系列' },
+                { id: 'vegetable', name: '素菜系列' },
+                { id: 'bbq', name: '烧烤系列' },
+                { id: 'cold', name: '凉菜系列' },
+                { id: 'staple', name: '主食系列' }
+            ],
+            dishes: [
+                { id: 1, name: '赤山 · 红烧肉', category: 'meat', image: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?w=600&h=400&fit=crop', tag: '招牌推荐', ingredients: ['五花肉', '冰糖', '老抽', '八角', '桂皮', '生姜', '料酒'], method: '1. 五花肉切块焯水去腥\n2. 锅中放少许油，小火炒化冰糖至焦糖色\n3. 放入肉块翻炒上色，加葱姜八角桂皮\n4. 倒入料酒、老抽，加开水没过肉块\n5. 大火烧开转小火焖煮1小时\n6. 大火收汁至浓稠，装盘撒葱花' },
+                { id: 2, name: '金沙 · 红烧排骨', category: 'meat', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop', tag: '经典美味', ingredients: ['猪排骨', '生抽', '料酒', '白糖', '葱姜', '八角'], method: '1. 排骨冷水下锅焯水\n2. 热锅冷油，下排骨煎至金黄\n3. 加入葱姜八角爆香\n4. 倒入料酒、生抽、白糖翻炒\n5. 加开水没过排骨炖40分钟\n6. 大火收汁即可出锅' },
+                { id: 3, name: '银丝 · 酸辣土豆', category: 'vegetable', image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&h=400&fit=crop', tag: '爽脆开胃', ingredients: ['土豆', '干辣椒', '花椒', '醋', '蒜末', '葱丝'], method: '1. 土豆切细丝，清水浸泡\n2. 热锅下油，炸香花椒粒\n3. 下干辣椒、蒜末爆香\n4. 大火下土豆丝翻炒\n5. 沿锅边淋入醋\n6. 翻炒均匀即可出锅' },
+                { id: 4, name: '翡翠 · 蒜泥空心菜', category: 'vegetable', image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&h=400&fit=crop', tag: '清新爽口', ingredients: ['空心菜', '大蒜', '生抽', '蚝油', '盐'], method: '1. 空心菜洗净切段\n2. 大蒜切末\n3. 热锅下油，爆香蒜末\n4. 下空心菜快速翻炒\n5. 加生抽、蚝油调味\n6. 大火快炒至断生即可' },
+                { id: 5, name: '漠北 · 孜然羊肉', category: 'bbq', image: 'https://images.unsplash.com/photo-1558030006-450675393462?w=600&h=400&fit=crop', tag: '炭火烤制', ingredients: ['羊肉', '孜然粉', '辣椒面', '盐', '洋葱'], method: '1. 羊肉切块腌制\n2. 用竹签串起\n3. 炭火烤架预热\n4. 羊肉串上烤架烤制\n5. 撒孜然、辣椒面\n6. 烤至焦香即可' },
+                { id: 6, name: '金翼 · 蜜汁鸡翅', category: 'bbq', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&h=400&fit=crop', tag: '香嫩多汁', ingredients: ['鸡翅中', '蜂蜜', '生抽', '蚝油', '蒜末'], method: '1. 鸡翅两面划刀\n2. 用生抽、蚝油腌制\n3. 烤箱200℃预热\n4. 刷蜂蜜水烤制\n5. 翻面再刷蜂蜜水\n6. 烤至金黄即可' },
+                { id: 7, name: '碧玉 · 拍黄瓜', category: 'cold', image: 'https://images.unsplash.com/photo-1547496502-affa22d38842?w=600&h=400&fit=crop', tag: '清脆爽口', ingredients: ['黄瓜', '蒜末', '香醋', '香油', '辣椒油'], method: '1. 黄瓜拍裂切段\n2. 加盐腌制出水\n3. 倒掉水分\n4. 加蒜末、香醋、香油\n5. 淋辣椒油拌匀\n6. 冰镇后更佳' },
+                { id: 8, name: '金沙 · 蛋炒饭', category: 'staple', image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&h=400&fit=crop', tag: '经典主食', ingredients: ['米饭', '鸡蛋', '葱花', '盐', '食用油'], method: '1. 米饭最好用隔夜饭\n2. 鸡蛋打散\n3. 热锅下油炒蛋\n4. 下米饭翻炒\n5. 加盐调味\n6. 撒葱花出锅' }
+            ],
+            nextDishId: 9
+        };
+
+        let menuData = null;
+        let editingDishId = null;
+        let nextDishId = 9;
+
+        // 从 localStorage 加载数据
+        function loadData() {
+            const saved = localStorage.getItem('menuAppData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    menuData = {
+                        categories: data.categories || defaultData.categories,
+                        dishes: data.dishes || defaultData.dishes
+                    };
+                    nextDishId = data.nextDishId || defaultData.nextDishId;
+                    return true;
+                } catch (e) {
+                    console.error('加载数据失败:', e);
+                }
+            }
+            return false;
+        }
+
+        // 保存数据到 localStorage
+        function saveData() {
+            const data = {
+                categories: menuData.categories,
+                dishes: menuData.dishes,
+                nextDishId: nextDishId
+            };
+            localStorage.setItem('menuAppData', JSON.stringify(data));
+        }
+
+        // 重置为默认数据
+        function resetData() {
+            if (confirm('确定要重置为默认数据吗？所有修改将丢失！')) {
+                localStorage.removeItem('menuAppData');
+                menuData = {
+                    categories: JSON.parse(JSON.stringify(defaultData.categories)),
+                    dishes: JSON.parse(JSON.stringify(defaultData.dishes))
+                };
+                nextDishId = defaultData.nextDishId;
+                renderNavLinks();
+                renderMainContent();
+                updateCategorySelect();
+                alert('已重置为默认数据');
+            }
+        }
+
+        // 删除菜品
+        function deleteDish(id) {
+            if (confirm('确定要删除这道菜品吗？')) {
+                menuData.dishes = menuData.dishes.filter(d => d.id !== id);
+                saveData();
+                renderMainContent();
+            }
+        }
+
+        function init() {
+            // 尝试加载已保存的数据，如果没有则使用默认数据
+            if (!loadData()) {
+                menuData = {
+                    categories: JSON.parse(JSON.stringify(defaultData.categories)),
+                    dishes: JSON.parse(JSON.stringify(defaultData.dishes))
+                };
+                nextDishId = defaultData.nextDishId;
+            }
+            renderNavLinks();
+            renderMainContent();
+            updateCategorySelect();
+        }
+
+        function renderNavLinks() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.innerHTML = menuData.categories.map((cat, i) => 
+                `<a href="#${cat.id}" class="nav-link ${i === 0 ? 'active' : ''}">${cat.name}</a>`
+            ).join('');
+            navLinks.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    const el = document.getElementById(this.getAttribute('href').substring(1));
+                    if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+                });
+            });
+        }
+
+        function renderMainContent() {
+            document.getElementById('mainContent').innerHTML = menuData.categories.map(cat => {
+                const dishes = menuData.dishes.filter(d => d.category === cat.id);
+                return `<section class="category-section" id="${cat.id}">
+                    <h2 class="section-title">${cat.name}</h2>
+                    <div class="dishes-grid">${dishes.map(d => renderDishCard(d)).join('')}</div>
+                </section>`;
+            }).join('');
+        }
+
+        function renderDishCard(d) {
+            return `<article class="dish-card" data-id="${d.id}">
+                <div class="dish-image-container">
+                    <img src="${d.image}" alt="${d.name}" class="dish-image">
+                    <span class="dish-tag">${d.tag}</span>
+                    <div class="card-actions">
+                        <button class="edit-btn" onclick="event.stopPropagation();openEditDishModal(${d.id})" title="编辑">✏️</button>
+                        <button class="delete-btn" onclick="event.stopPropagation();deleteDish(${d.id})" title="删除">🗑️</button>
+                    </div>
+                </div>
+                <div class="dish-content" onclick="toggleDetails(this.parentElement)">
+                    <h3 class="dish-name">${d.name}</h3>
+                    <p class="click-hint">点击查看详情 ↓</p>
+                </div>
+                <div class="dish-details">
+                    <div class="details-inner">
+                        <div class="detail-section">
+                            <div class="detail-title">精选配料</div>
+                            <div class="dish-ingredients">${d.ingredients.map(i => `<span class="ingredient">${i}</span>`).join('')}</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-title">烹饪步骤</div>
+                            <div class="dish-method">${d.method.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="click-indicator">⌄</div>
+            </article>`;
+        }
+
+        function toggleDetails(card) {
+            const details = card.querySelector('.dish-details');
+            document.querySelectorAll('.dish-details.show').forEach(d => {
+                if (d !== details) { d.classList.remove('show'); d.closest('.dish-card').classList.remove('expanded'); }
+            });
+            details.classList.toggle('show');
+            card.classList.toggle('expanded');
+        }
+
+        function updateCategorySelect() {
+            document.getElementById('dishCategory').innerHTML = menuData.categories.map(c => 
+                `<option value="${c.id}">${c.name}</option>`
+            ).join('');
+        }
+
+        // 处理图片上传
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                // 检查文件类型
+                if (!file.type.startsWith('image/')) {
+                    alert('请选择图片文件');
+                    return;
+                }
+                // 检查文件大小（限制 5MB）
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('图片大小不能超过 5MB');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('dishImage').value = e.target.result;
+                    showPreview(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 显示预览
+        function showPreview(src) {
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            img.src = src;
+            preview.style.display = 'inline-block';
+        }
+
+        // 移除预览
+        function removeImage() {
+            document.getElementById('dishImage').value = '';
+            document.getElementById('dishImageFile').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        function openAddDishModal() {
+            editingDishId = null;
+            document.getElementById('dishModalTitle').textContent = '新增菜品';
+            document.getElementById('saveDishBtn').textContent = '添加';
+            document.getElementById('dishName').value = '';
+            document.getElementById('dishImage').value = '';
+            document.getElementById('dishImageFile').value = '';
+            document.getElementById('dishTag').value = '';
+            document.getElementById('dishIngredients').value = '';
+            document.getElementById('dishMethod').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('dishModal').classList.add('show');
+        }
+
+        function openEditDishModal(id) {
+            editingDishId = id;
+            const d = menuData.dishes.find(x => x.id === id);
+            if (!d) return;
+            document.getElementById('dishModalTitle').textContent = '编辑菜品';
+            document.getElementById('saveDishBtn').textContent = '保存修改';
+            document.getElementById('dishName').value = d.name;
+            document.getElementById('dishCategory').value = d.category;
+            document.getElementById('dishImage').value = d.image;
+            document.getElementById('dishImageFile').value = '';
+            document.getElementById('dishTag').value = d.tag;
+            document.getElementById('dishIngredients').value = d.ingredients.join(', ');
+            document.getElementById('dishMethod').value = d.method;
+            // 显示图片预览
+            if (d.image) {
+                showPreview(d.image);
+            } else {
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+            document.getElementById('dishModal').classList.add('show');
+        }
+
+        function closeDishModal() {
+            document.getElementById('dishModal').classList.remove('show');
+        }
+
+        function saveDish() {
+            const name = document.getElementById('dishName').value.trim();
+            const category = document.getElementById('dishCategory').value;
+            const image = document.getElementById('dishImage').value.trim();
+            const tag = document.getElementById('dishTag').value.trim();
+            const ingredients = document.getElementById('dishIngredients').value.split(',').map(s => s.trim()).filter(s => s);
+            const method = document.getElementById('dishMethod').value.trim();
+            
+            if (!name) { alert('请输入菜品名称'); return; }
+            
+            if (editingDishId) {
+                const d = menuData.dishes.find(x => x.id === editingDishId);
+                if (d) { Object.assign(d, { name, category, image, tag, ingredients, method }); }
+            } else {
+                menuData.dishes.push({ id: nextDishId++, name, category, image, tag, ingredients, method });
+            }
+            
+            closeDishModal();
+            saveData();
+            renderMainContent();
+        }
+
+        function openAddCategoryModal() {
+            document.getElementById('categoryName').value = '';
+            document.getElementById('categoryModal').classList.add('show');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('show');
+        }
+
+        function saveCategory() {
+            const name = document.getElementById('categoryName').value.trim();
+            if (!name) { alert('请输入系列名称'); return; }
+            const id = name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+            menuData.categories.push({ id, name });
+            closeCategoryModal();
+            saveData();
+            renderNavLinks();
+            renderMainContent();
+            updateCategorySelect();
+        }
+
+        init();
+    </script>
+</body>
+</html>
